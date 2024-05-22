@@ -7,6 +7,7 @@ import com.seyed.ali.TaskService.service.interfaces.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,6 +23,12 @@ public class TaskServiceImpl implements TaskService {
         if (this.projectServiceClient.validateProjectsExistence(task.getProjectId()))
             task.setProjectId(task.getProjectId());
         return this.taskRepository.save(task);
+    }
+
+    @Override
+    public List<Task> findAllTasksForProject(String projectId) {
+        this.projectServiceClient.validateProjectsExistence(projectId);
+        return taskRepository.findByProjectId(projectId);
     }
 
 }

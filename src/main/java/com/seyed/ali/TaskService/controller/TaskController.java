@@ -8,12 +8,12 @@ import com.seyed.ali.TaskService.util.converter.TaskConverter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +34,19 @@ public class TaskController {
                 true,
                 CREATED,
                 "Task created successfully.",
+                response
+        ));
+    }
+
+    @GetMapping("/{projectId}")
+    public ResponseEntity<Result> findAllTasksForProject(@PathVariable String projectId) {
+        List<Task> taskList = this.taskService.findAllTasksForProject(projectId);
+        List<TaskDTO> response = this.taskConverter.convertTaskDTOList(taskList);
+
+        return ResponseEntity.ok(new Result(
+                true,
+                OK,
+                "List of all the tasks for project: '" + projectId + "'",
                 response
         ));
     }
