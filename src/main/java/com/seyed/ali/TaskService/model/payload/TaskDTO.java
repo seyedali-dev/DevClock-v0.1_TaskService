@@ -22,6 +22,9 @@ public record TaskDTO(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The status of task", example = "COMPLETED | IN_PROGRESS | DROPPED | PLANNED_FOR_FUTURE")
         TaskStatus taskStatus,
 
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The order of the task", example = "1")
+        Integer taskOrder,
+
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Unique identifier for the project that the task needs to be associated with", example = "12345")
         String projectId
 

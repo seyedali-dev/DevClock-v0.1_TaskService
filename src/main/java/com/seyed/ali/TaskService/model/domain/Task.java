@@ -20,6 +20,7 @@ public class Task {
     private String taskName;
     private String taskDescription;
     private TaskStatus taskStatus;
+    private Integer taskOrder;
 
     private String projectId;
 

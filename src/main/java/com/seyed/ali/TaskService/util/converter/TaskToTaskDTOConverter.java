@@ -10,7 +10,7 @@ public class TaskToTaskDTOConverter implements Converter<Task, TaskDTO> {
 
     @Override
     public TaskDTO convert(Task source) {
-        return new TaskDTO(source.getTaskId(), source.getTaskName(), source.getTaskDescription(), source.getTaskStatus(), source.getProjectId());
+        return new TaskDTO(source.getTaskId(), source.getTaskName(), source.getTaskDescription(), source.getTaskStatus(), source.getTaskOrder(), source.getProjectId());
     }
 
 }
