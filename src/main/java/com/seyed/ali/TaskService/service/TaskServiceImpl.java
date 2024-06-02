@@ -2,6 +2,7 @@ package com.seyed.ali.TaskService.service;
 
 import com.seyed.ali.TaskService.client.ProjectServiceClient;
 import com.seyed.ali.TaskService.exceptions.OperationNotSupportedException;
+import com.seyed.ali.TaskService.exceptions.ResourceNotFoundException;
 import com.seyed.ali.TaskService.model.domain.Task;
 import com.seyed.ali.TaskService.repository.TaskRepository;
 import com.seyed.ali.TaskService.service.interfaces.TaskService;
@@ -53,6 +54,16 @@ public class TaskServiceImpl implements TaskService {
 
         // Fetch tasks for the project ordered by task order
         return taskRepository.findByProjectIdOrderByTaskOrderAsc(projectId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteTask(Task task) throws ResourceNotFoundException {
+        Task foundTask = this.taskRepository.findById(task.getTaskId())
+                .orElseThrow(() -> new ResourceNotFoundException("Task with id " + task.getTaskId() + " not found."));
+        this.taskRepository.delete(foundTask);
     }
 
 }

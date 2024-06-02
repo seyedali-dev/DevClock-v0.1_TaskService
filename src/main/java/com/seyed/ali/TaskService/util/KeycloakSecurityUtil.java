@@ -1,15 +1,23 @@
 package com.seyed.ali.TaskService.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seyed.ali.TaskService.exceptions.OperationNotSupportedException;
 import com.seyed.ali.TaskService.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClient;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,16 +29,24 @@ import java.util.Map;
  * <br><br>
  * <ul>
  *     <li>It provides methods to extract user roles from the JWT token and convert them into granted authorities for Spring Security.</li>
+ *     <li>It provides method to JWT token from {@link SecurityContext}.</li>
+ *     <li>It provides method to get a new {@code access_token} from Keycloak server.</li>
  * </ul>
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KeycloakSecurityUtil {
+
+    private @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String issuerUri;
+    private @Value("${KEYCLOAK_CLIENT_ID}") String clientId;
+    private @Value("${KEYCLOAK_CLIENT_SECRET}") String clientSecret;
 
     /**
      * Object mapper instance for converting JSON data to Java objects.
      */
     private final ObjectMapper objectMapper;
+    private final RestClient restClient;
 
     /**
      * This method extracts a collection of granted authorities from a Keycloak JWT token.
@@ -70,6 +86,44 @@ public class KeycloakSecurityUtil {
             return jwtAuthenticationToken.getToken().getTokenValue();
         }
         throw new ResourceNotFoundException("No JWT token found in security context");
+    }
+
+    /**
+     * Note:
+     * <p>
+     * This method was intended for getting an access_token. When we were making a rest call to another service in the event_listener
+     * <p>
+     * using kafka, we were getting into unauthorized. So instead of sending the jwt as header, we just made a call to keycloak and
+     * <p>
+     * sent a new access_token for intercommunication between microservices -> client_credential.
+     */
+    public String getAccessToken() {
+        try {
+
+            String jsonResponse = RestCallToKeycloak();
+            JsonNode jsonNode = this.objectMapper.readTree(jsonResponse);
+            String accessToken = jsonNode.path("access_token").asText();
+            log.info("accessToken: {}", accessToken);
+            return accessToken;
+
+        } catch (Exception e) {
+            log.error("Exception in catch - Cause: {}", e.getMessage());
+            throw new OperationNotSupportedException("Exception in catch - Cause: " + e.getMessage());
+        }
+    }
+
+    private String RestCallToKeycloak() {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("grant_type", "client_credentials");
+        formData.add("client_id", this.clientId);
+        formData.add("client_secret", this.clientSecret);
+
+        return this.restClient.post()
+                .uri(this.issuerUri + "/protocol/openid-connect/token") // token endpoint
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .body(formData)
+                .retrieve()
+                .body(String.class);
     }
 
 }

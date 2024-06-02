@@ -93,4 +93,14 @@ public class TimeEntryServiceHandlerAdvice {
         ));
     }
 
+    @ExceptionHandler({Exception.class})
+    public ResponseEntity<Result> handleException(Exception e) {
+        return ResponseEntity.status(NOT_FOUND).body(new Result(
+                false,
+                NOT_FOUND,
+                "Exception Has Occurred!!!",
+                "🚫 - " + e.getMessage()
+        ));
+    }
+
 }

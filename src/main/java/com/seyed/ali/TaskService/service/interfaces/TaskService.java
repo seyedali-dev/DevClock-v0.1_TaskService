@@ -20,7 +20,7 @@ public interface TaskService {
      * @return The created task.
      * @throws OperationNotSupportedException If the task order already exists for the project.
      */
-    Task createTask(Task task);
+    Task createTask(Task task) throws OperationNotSupportedException;
 
     /**
      * Retrieves all tasks for a given project ID, ordered by task order in ascending order.
@@ -31,6 +31,14 @@ public interface TaskService {
      * @return A list of tasks associated with the specified project, ordered by task order.
      * @throws ResourceNotFoundException if the project ID does not exist.
      */
-    List<Task> findAllTasksForProject(String projectId);
+    List<Task> findAllTasksForProject(String projectId) throws ResourceNotFoundException;
+
+    /**
+     * Delete task.
+     *
+     * @param task The task to be deleted.
+     * @throws ResourceNotFoundException If the task is not found.
+     */
+    void deleteTask(Task task) throws ResourceNotFoundException;
 
 }
