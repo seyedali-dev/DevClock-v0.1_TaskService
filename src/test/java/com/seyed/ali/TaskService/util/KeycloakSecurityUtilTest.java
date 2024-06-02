@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.client.RestClient;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -76,7 +77,8 @@ class KeycloakSecurityUtilTest {
                 .thenReturn(realmAccess);
 
         // when
-        KeycloakSecurityUtil keycloakSecurityUtil = new KeycloakSecurityUtil(new ObjectMapper());
+        RestClient restClient = mock(RestClient.class);
+        KeycloakSecurityUtil keycloakSecurityUtil = new KeycloakSecurityUtil(new ObjectMapper(), restClient);
         Collection<GrantedAuthority> authorities = keycloakSecurityUtil.extractAuthorities(jwt);
 
         // then
