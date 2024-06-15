@@ -43,7 +43,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
-        spring.json.type.mapping: ProjectEvent:com.seyed.ali.TaskService.model.payload.ProjectDTO
+        spring.json.type.mapping: ProjectEvent:com.seyed.ali.taskservice.model.payload.ProjectDTO
 
         #custom
     topic:
