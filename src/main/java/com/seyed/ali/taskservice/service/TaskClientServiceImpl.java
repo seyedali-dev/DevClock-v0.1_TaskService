@@ -23,4 +23,13 @@ public class TaskClientServiceImpl implements TaskClientService {
         return task != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Task getTaskByName(String identifier) {
+        return this.taskRepository.findByTaskName(identifier)
+                .orElseThrow(() -> new ResourceNotFoundException("Task with provided name =" + identifier + "= was not found."));
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.seyed.ali.taskservice.service.interfaces;
 
+import com.seyed.ali.taskservice.model.domain.Task;
+
 public interface TaskClientService {
 
     /**
@@ -10,5 +12,13 @@ public interface TaskClientService {
      * otherwise return {@code false}.
      */
     boolean validateTasksExistence(String taskId);
+
+    /**
+     * Fetches a task by its name.
+     *
+     * @param identifier the task name.
+     * @return found Task object.
+     */
+    Task getTaskByName(String identifier);
 
 }
