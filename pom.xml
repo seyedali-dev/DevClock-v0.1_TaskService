@@ -136,6 +136,8 @@
 				</configuration>
 			</plugin>
 		</plugins>
+
+		<finalName>task</finalName>
 	</build>
 
 </project>
